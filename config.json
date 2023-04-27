@@ -9,5 +9,8 @@
     },
     "ArenaQuery": {
         "pcrd_key": ""
+    },
+    "BattleRecord": {
+        "mode": "json"
     }
 }
