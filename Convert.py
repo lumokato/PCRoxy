@@ -18,18 +18,31 @@ for file in dir_files:
                     'name': user_name_dict[user]['user_name'],
                     'battle': {}
                 }
+battle_log_all = {}
 for file in dir_files:
     if file[:6] == 'battle':
-        user_battle_log = json.loads(open('json/' + file, 'r+').read())
-        for user in user_battle_log.keys():
-            user_log = user_battle_log[user]['battle_log']
-            if user_log:
-                for battle in user_log.keys():
-                    if battle not in battle_all:
-                        battle_all.append(battle)
-                        battle_date = time.strftime("%m%d", time.localtime(user_log[battle]['time']-18000))
-                        user_stat[battle_date][user]['battle'][str(user_log[battle]['lap'])+'-'+str(user_log[battle]['order'])] = user_log[battle]['damage']
+        battle_log_single = json.loads(open('json/' + file, 'r+').read())
+        battle_log_all = dict(battle_log_all, **battle_log_single)
 
+lap_max = 0
+for battle_log in battle_log_all.keys():
+    if battle_log_all[battle_log]['lap'] > lap_max:
+        lap_max = battle_log_all[battle_log]['lap']
+for lap in range(1, lap_max+1):
+    for order in range(1, 6):
+        time_damage = {}
+        for battle_log in battle_log_all.keys():
+            if battle_log_all[battle_log]['lap'] == lap and battle_log_all[battle_log]['order'] == order:
+                time_damage[battle_log_all[battle_log]['time']]= battle_log_all[battle_log]
+
+        damage_order = sorted(time_damage.items(), key=lambda x:x[0], reverse=True)
+        if damage_order:
+            for i, damage_tuple in enumerate(damage_order):
+                if_extra = 0
+                if damage_tuple[1]['lap'] > 44 and damage_tuple[1]['damage'] < 10000000:
+                    if_extra = 1
+                battle_date = time.strftime("%m%d", time.localtime(damage_tuple[0] - 18000))
+                user_stat[battle_date][str(damage_tuple[1]['viewer_id'])]['battle'][str(damage_tuple[1]['lap'])+'-'+str(damage_tuple[1]['order'])+('尾' if i == 0 else '')+('补' if if_extra == 1 else '')] = damage_tuple[1]['damage']
 
 for date in date_list:
     write_str = ''

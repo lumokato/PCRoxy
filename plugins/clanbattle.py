@@ -30,10 +30,11 @@ async def DumpBattleLog(context: HookCtx):
     for file in dir_files:
         if file[:7] == 'members':
             user_battle_log = json.loads(open('json/' + file, 'r+').read())
-
+    battle_log_all = {}
     for battle in context.payload['data']['battle_list']:
         if str(battle['target_viewer_id']) in user_battle_log.keys() and battle['battle_type'] == 1:
-            user_battle_log[str(battle['target_viewer_id'])]['battle_log'][battle['battle_log_id']] = {
+            battle_log_all[battle['battle_log_id']] = {
+                'viewer_id': battle['target_viewer_id'],
                 'lap': battle['lap_num'],
                 'order': battle['order_num'],
                 'damage': battle['total_damage'],
@@ -42,4 +43,4 @@ async def DumpBattleLog(context: HookCtx):
     global page
     page += 1
     with open('json/battle' + file[7:-5] + str(page) + '.json', 'w') as f:
-        json.dump(user_battle_log, f, indent=4)
+        json.dump(battle_log_all, f, indent=4)
