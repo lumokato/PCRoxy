@@ -45,13 +45,20 @@ for lap in range(1, lap_max+1):
                 user_stat[battle_date][str(damage_tuple[1]['viewer_id'])]['battle'][str(damage_tuple[1]['lap'])+'-'+str(damage_tuple[1]['order'])+('尾' if i == 0 else '')+('补' if if_extra == 1 else '')] = damage_tuple[1]['damage']
 
 for date in date_list:
-    write_str = ''
+    write_str_all = ''
     for user in user_stat[date].keys():
-        write_str += user_stat[date][user]['name'] + ','
+        write_str = ''
+        finish_num = 0
         if user_stat[date][user]['battle']:
             battle_user = sorted(user_stat[date][user]['battle'].items(), key=lambda x: x[1], reverse=True)
             for battle in battle_user:
                 write_str += '(' + battle[0] + ')' + str(battle[1]) + ','
-        write_str += '\n'
+                if '补' in battle[0] or '尾' in battle[0]:
+                    finish_num += 0.5
+                else:
+                    finish_num += 1
+        if finish_num > 3:
+            finish_num = 3
+        write_str_all += user_stat[date][user]['name'] + ',' + str(finish_num) + ',' + write_str + '\n'
     with open('csv/' + date + '.csv', 'w') as f:
-        f.write(write_str)
+        f.write(write_str_all)

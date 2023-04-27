@@ -122,6 +122,6 @@ async def DumpPlayerBox(context: HookCtx):
     elif mode == 'file':
         box_data['user_info'] = context.payload['data']['user_info']
         json.dump(box_data, open(
-            f'./box_{box_data["user_info"]["viewer_id"]}.json', 'w'))
+            f'./json/box_{box_data["user_info"]["viewer_id"]}.json', 'w'))
     else:
         raise ValueError(f'Unknown mode: {mode}')
